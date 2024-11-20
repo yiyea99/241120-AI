@@ -1,28 +1,34 @@
+from flask import Flask, request, jsonify, render_template
 import requests
 
-def deepl_translate(text, target_language="KO", source_language=None):
-    api_key = "YOUR_API_KEY"  # DeepL에서 발급받은 API 키
-    url = "https://api-free.deepl.com/v2/translate"
+app = Flask(__name__)
 
-    # 요청 데이터 구성
-    data = {
-        "auth_key": api_key,
+DEEPL_API_KEY = " "  # DeepL API 키
+
+@app.route("/")
+def home():
+    return render_template("dic.html")
+
+@app.route("/translate", methods=["POST"])
+def translate():
+    data = request.json
+    text = data.get("text")
+    target_language = "EN" 
+
+    url = "https://api-free.deepl.com/v2/translate"
+    payload = {
+        "auth_key": DEEPL_API_KEY,
         "text": text,
         "target_lang": target_language
     }
-    if source_language:
-        data["source_lang"] = source_language
 
-    # API 호출
-    response = requests.post(url, data=data)
-
+    response = requests.post(url, data=payload)
     if response.status_code == 200:
         result = response.json()
-        return result["translations"][0]["text"]
+        translated_text = result["translations"][0]["text"]
+        return jsonify({"translatedText": translated_text})
     else:
-        return f"Error: {response.status_code}, {response.text}"
+        return jsonify({"error": response.text}), response.status_code
 
-# 예제 사용법
-text_to_translate = "Hello, how are you?"
-translated_text = deepl_translate(text_to_translate, target_language="KO")
-print(f"번역 결과: {translated_text}")
+if __name__ == "__main__":
+    app.run(debug=True)
