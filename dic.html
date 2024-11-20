@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeepL 번역 챗봇</title>
+    <title>DeepL 번역 ChatBOT</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -76,10 +76,9 @@
 <body>
     <div class="chat-container">
         <div class="chat-header">
-            DeepL 번역 챗봇
+            DeepL 번역 ChatBOT
         </div>
         <div class="chat-body" id="chatBody">
-            <!-- 대화 내용이 동적으로 추가됩니다 -->
         </div>
         <div class="chat-footer">
             <input type="text" id="chatInput" class="chat-input" placeholder="번역할 문장을 입력하세요">
@@ -93,16 +92,13 @@
             const chatInput = document.getElementById('chatInput');
 
             if (chatInput.value.trim() !== "") {
-                // 사용자 메시지 추가
                 const userMessage = document.createElement('div');
                 userMessage.className = 'chat-message user';
                 userMessage.innerText = chatInput.value;
                 chatBody.appendChild(userMessage);
 
-                // 스크롤을 최신 상태로 유지
                 chatBody.scrollTop = chatBody.scrollHeight;
 
-                // 서버로 메시지 전송
                 try {
                     const response = await fetch("/translate", {
                         method: "POST",
@@ -115,13 +111,11 @@
                     if (response.ok) {
                         const data = await response.json();
 
-                        // 챗봇 응답 추가
                         const botMessage = document.createElement('div');
                         botMessage.className = 'chat-message';
                         botMessage.innerText = data.translatedText;
                         chatBody.appendChild(botMessage);
 
-                        // 스크롤을 최신 상태로 유지
                         chatBody.scrollTop = chatBody.scrollHeight;
                     } else {
                         console.error("Error:", response.statusText);
@@ -129,8 +123,6 @@
                 } catch (error) {
                     console.error("Error:", error);
                 }
-
-                // 입력창 초기화
                 chatInput.value = "";
             }
         }
