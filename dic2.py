@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, jsonify
 import requests
 
 app = Flask(__name__)
@@ -11,23 +11,24 @@ def home():
 
 @app.route("/translate", methods=["POST"])
 def translate():
-    text = request.form["text"]
+    data = request.json
+    text = data.get("text")
     target_language = "EN"  # 항상 영어로 번역
 
     url = "https://api-free.deepl.com/v2/translate"
-    data = {
+    payload = {
         "auth_key": DEEPL_API_KEY,
         "text": text,
         "target_lang": target_language
     }
 
-    response = requests.post(url, data=data)
+    response = requests.post(url, data=payload)
     if response.status_code == 200:
         result = response.json()
         translated_text = result["translations"][0]["text"]
-        return f"<h1>번역 결과</h1><p>{translated_text}</p>"
+        return jsonify({"translatedText": translated_text})
     else:
-        return f"<h1>Error</h1><p>{response.text}</p>"
+        return jsonify({"error": response.text}), response.status_code
 
 if __name__ == "__main__":
     app.run(debug=True)
