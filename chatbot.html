@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chatbot</title>
+    <title>DeepL 번역 챗봇</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -76,13 +76,13 @@
 <body>
     <div class="chat-container">
         <div class="chat-header">
-            AI Chatbot
+            DeepL 번역 챗봇
         </div>
         <div class="chat-body" id="chatBody">
-            <!-- Messages will be dynamically added here -->
+            <!-- 대화 내용이 동적으로 추가됩니다 -->
         </div>
         <div class="chat-footer">
-            <input type="text" id="chatInput" class="chat-input" placeholder="Type your message...">
+            <input type="text" id="chatInput" class="chat-input" placeholder="번역할 텍스트 입력">
             <button class="send-button" onclick="sendMessage()">Send</button>
         </div>
     </div>
@@ -91,7 +91,6 @@
         async function sendMessage() {
             const chatBody = document.getElementById('chatBody');
             const chatInput = document.getElementById('chatInput');
-            const targetLang = 'KO'; // 번역 대상 언어 (예: 한국어)
 
             if (chatInput.value.trim() !== "") {
                 // 사용자 메시지 추가
@@ -100,32 +99,29 @@
                 userMessage.innerText = chatInput.value;
                 chatBody.appendChild(userMessage);
 
-                // Scroll to the bottom
+                // 스크롤 하단으로 이동
                 chatBody.scrollTop = chatBody.scrollHeight;
 
-                // API 호출
+                // 서버로 메시지 전송
                 try {
-                    const response = await fetch("/translate", {
+                    const response = await fetch("/chat", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"
                         },
-                        body: JSON.stringify({
-                            text: chatInput.value,
-                            target_lang: targetLang
-                        })
+                        body: JSON.stringify({ message: chatInput.value })
                     });
 
                     if (response.ok) {
                         const data = await response.json();
 
-                        // 번역 결과를 봇 메시지로 추가
+                        // 챗봇 응답 추가
                         const botMessage = document.createElement('div');
                         botMessage.className = 'chat-message';
-                        botMessage.innerText = data.translatedText;
+                        botMessage.innerText = data.message;
                         chatBody.appendChild(botMessage);
 
-                        // Scroll to the bottom
+                        // 스크롤 하단으로 이동
                         chatBody.scrollTop = chatBody.scrollHeight;
                     } else {
                         console.error("Error:", response.statusText);
